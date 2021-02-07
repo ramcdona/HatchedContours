@@ -38,6 +38,7 @@ function h=hatchedline(xc,yc,linespec,theta,ar,spc,len,varargin)
 %                               argument list.  Incompatible calling
 %                               convention.
 %   26 October  2020 v. 1.6 -- Added support for log-plots.
+%   7  February 2021 v. 1.7 -- Fix bug with default axes and huge data.
 
 xlog = strcmp( get( gca, 'XScale' ), 'log' );
 ylog = strcmp( get( gca, 'YScale' ), 'log' );
@@ -95,6 +96,14 @@ if(spc < 0)
   ax=axis;
 
   dxax = ax(2)-ax(1);
+
+  if ( ax == [0 1 0 1] )
+      % Likely default axes.  Instead, use x-limits.
+      % If not, hopefully this won't look too terrible.
+      % Set scale by diagonal of bounding box of line data.
+      dxax = sqrt( (max(xc) - min(xc))^2 + (max(yc) - min(yc))^2 );
+  end
+
   if ( xlog )
       dxax = log( dxax );
   end
