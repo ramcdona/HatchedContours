@@ -1,9 +1,9 @@
-function h=hatchedcontours(C,linespec,ar,spc,len,theta)
+function h=hatchedcontours(C,varargin)
 %HATCHEDCONTOURS Plot contours with hatched style
-%   H=hatchedcontours(C,LINESPEC,AR,SPC,LEN,THETA) plots the contours
-%   specified in C with a hatched line style appropriate for constriant
-%   diagrams.  The remaining parmeters describe the hatch style as
-%   described in HATCHEDCONTOURS.
+%   H=hatchedcontours(C,VARARGIN) plots the 
+%   contours specified in C with a hatched line style appropriate for 
+%   constriant diagrams.  The remaining parmeters describe the hatch 
+%   style as described in HATCHEDCONTOURS.
 %
 %   The graphics handles for all of the curves are returned in H.
 %
@@ -12,12 +12,19 @@ function h=hatchedcontours(C,linespec,ar,spc,len,theta)
 %   Rob McDonald 
 %   ramcdona@calpoly.edu  
 %   12 December 2006 v. 1.0
+%   11 March 2007 v. 1.5 -- Rearranged inputs, added defaults for variable
+%                           argument list.  Incompatible calling
+%                           convention.
 
 % Break contour array C into curves for individual plotting and plot them.
+
+% Store axis setting in case figure is cleared.
+ax=axis;
 
 holdsetting=ishold;
 if(~holdsetting) 
   clf
+  axis(ax);
 end
 hold on;
 
@@ -32,7 +39,7 @@ while(icont<nlimit)
   yc=C(2,icont+1:icont+n);
   
   % Plot hatched curves
-  h=[h; hatchedline(xc,yc,linespec,ar,spc,len,theta)];
+  h=[h; hatchedline(xc,yc,varargin{:})];
   icont=icont+n+1;
 end
 
