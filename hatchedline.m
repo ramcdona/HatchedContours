@@ -32,12 +32,24 @@ function h=hatchedline(xc,yc,linespec,theta,ar,spc,len,varargin)
 %   See also HATCHEDCONTOURS, CONTOURC.
 
 %   Rob McDonald 
-%   ramcdona@calpoly.edu  
-%   12 December 2006 v. 1.0
-%   11 March 2007 v. 1.5 -- Rearranged inputs, added defaults for variable
-%                           argument list.  Incompatible calling
-%                           convention.
+%   rob.a.mcdonald@gmail.com
+%   12 December 2006 v. 1.0 -- Original version.
+%   11 March    2007 v. 1.5 -- Rearranged inputs, added defaults for variable
+%                               argument list.  Incompatible calling
+%                               convention.
+%   26 October  2020 v. 1.6 -- Added support for log-plots.
 
+xlog = strcmp( get( gca, 'XScale' ), 'log' );
+ylog = strcmp( get( gca, 'YScale' ), 'log' );
+
+% Transform data if in log-space
+if ( xlog )
+    xc = log( xc );
+end
+
+if ( ylog )
+    yc = log( yc );
+end
 
 % Default blue solid line
 if(nargin < 3)
@@ -52,7 +64,18 @@ end
 % As Default, read aspect ratio from chart.
 if(nargin<5)
   ax=axis;
-  ar=(ax(4)-ax(3))/(ax(2)-ax(1));
+
+  dxax = ax(2)-ax(1);
+  if ( xlog )
+      dxax = log( dxax );
+  end
+
+  dyax = ax(4)-ax(3);
+  if ( ylog )
+      dyax = log( dyax );
+  end
+
+  ar = dyax / dxax;
 end
 
 % Default tick spacing
@@ -70,7 +93,13 @@ end
 % 'dimensionalize' spc if specified nondimensional
 if(spc < 0)
   ax=axis;
-  spc=-spc*(ax(2)-ax(1));
+
+  dxax = ax(2)-ax(1);
+  if ( xlog )
+      dxax = log( dxax );
+  end
+
+  spc = -spc * dxax;
 end
 
 % 'dimenionalize' length
@@ -113,6 +142,20 @@ T=[ct -st;st ct];
 % Rotate and scale unit vector into tick vector
 dxy=(uv'*T)'*len;
 
+xticks = [xtick; xtick+dxy(1,:)];
+yticks = [ytick; ytick+dxy(2,:)*ar];
+
+% Transform back out of log-space
+if ( xlog )
+    xc = exp( xc );
+    xticks = exp( xticks );
+end
+
+if ( ylog )
+    yc = exp( yc );
+    yticks = exp( yticks );
+end
+
 % Plot the curve and the ticks.
-h=plot(xc,yc,linespec,[xtick; xtick+dxy(1,:)],[ytick; ytick+dxy(2,:)*ar],linespec,varargin{:});
+h=plot(xc,yc,linespec,xticks,yticks,linespec,varargin{:});
 
