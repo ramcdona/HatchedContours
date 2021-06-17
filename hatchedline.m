@@ -39,6 +39,7 @@ function h=hatchedline(xc,yc,linespec,theta,ar,spc,len,varargin)
 %                               convention.
 %   26 October  2020 v. 1.6 -- Added support for log-plots.
 %   7  February 2021 v. 1.7 -- Fix bug with default axes and huge data.
+%   16 June     2021 v. 1.8 -- Improve discovery of aspect ratio.
 
 xlog = strcmp( get( gca, 'XScale' ), 'log' );
 ylog = strcmp( get( gca, 'YScale' ), 'log' );
@@ -76,7 +77,14 @@ if(nargin<5)
       dyax = log( dyax );
   end
 
-  ar = dyax / dxax;
+  ard = dyax / dxax;
+
+  % Plot aspect ratio (paper space)
+  pa = pbaspect(  );
+  arp = pa( 2 ) / pa( 1 );
+
+  % Compute overall aspect ratio including data and paper influence
+  ar = ard / arp;
 end
 
 % Default tick spacing
