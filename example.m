@@ -42,6 +42,13 @@ c2=ocontourc(x1,x2',con2',[0 0]);
 c3=ocontourc(x1,x2',con3',[0 0]);
 
 hold on
+
+plot([0 0],[0 0],'k');
+plot([0 0],[0 0],'r');
+plot([0 0],[0 0],'b');
+
+legend( 'Objective', 'Black', 'Red', 'Blue', 'AutoUpdate','off' );
+
 hatchedcontours(c1,'k');
 hatchedcontours(c2,'r');
 hatchedcontours(c3);
